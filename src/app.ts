@@ -307,6 +307,11 @@ app.get(
 // });
 
 //testing translation
+app.use("/home",(req,res)=>{
+  res.json({
+    msg:"Hi Deployment successfull--agter github pipeline"
+  })
+})
 app.use("/api/v1", router);
 // routes
 app.use("/api/v1/auth", authRouter);
