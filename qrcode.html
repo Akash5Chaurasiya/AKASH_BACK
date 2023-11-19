@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multiple Random QR Code Generator</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #qrcodes-container {
+        max-width: 1000px; /* Adjust the max width as needed */
+        margin: 0 auto;
+      }
+
+      .qrcode-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .qrcode-container {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: calc(20% - 20px); /* Updated width to fit 5 QR codes in a row with spacing */
+        box-sizing: border-box;
+      }
+
+      .qrcode-container canvas {
+        margin-bottom: 10px;
+      }
+
+      .qrcode-container .number {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+        font-size: 18px;
+        padding: 5px 10px;
+        background-color: #fff;
+        color: #000;
+      }
+
+      @media print {
+        .qrcode-row {
+          page-break-inside: avoid;
+        }
+        
+        /* Adjust the margins to fit QR codes within the printable area of an A4 page */
+        @page {
+          margin: 20mm;
+        }
+      }
+    </style>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div id="qrcodes-container"></div>
+    <button onclick="saveAsPDF()">Save as PDF</button>
+
+    <script>
+      async function generateQRCode() {
+        const qrcodesContainer = document.getElementById('qrcodes-container');
+        const numberOfColumns = 5; // Change to 5 to display 5 QR codes in a row
+        let currentRow;
+
+        for (let i = 0; i < 200; i++) {
+          // Create a new row for every fifth QR code
+          if (i % numberOfColumns === 0) {
+            currentRow = document.createElement('div');
+            currentRow.className = 'qrcode-row';
+            qrcodesContainer.appendChild(currentRow);
+          }
+
+          // Generate a random string as data for the QR code
+          const randomString = Math.random().toString(36).substring(2, 15);
+          const dataWithNumber = randomString + ('0000' + (i + 1)).slice(-4);
+
+          // Create a div element for each QR code
+          const qrcodeDiv = document.createElement('div');
+          qrcodeDiv.className = 'qrcode-container'; // Apply the CSS class
+          currentRow.appendChild(qrcodeDiv);
+
+          try {
+            // Create a QRCode instance for each QR code
+            const qrcode = new QRCode(qrcodeDiv, {
+              text: dataWithNumber,
+              width: 100, // Adjust the size of the QR code as needed
+              height: 100, // Adjust the size of the QR code as needed
+            });
+
+            // Add the number or string overlay to the QR code
+            const canvas = qrcodeDiv.getElementsByTagName('canvas')[0];
+            const ctx = canvas.getContext('2d');
+            const number = ('0000' + (i + 1)).slice(-4);
+            // const centerX = canvas.width / 2;
+            // const centerY = canvas.height / 2;
+
+            // Clear the center area
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(centerX - 25, centerY - 30, 50, 50);
+
+            // Add the image in the center
+            const image = new Image();
+            image.src = 'path/to/your/image.png';
+            image.onload = () => {
+              ctx.drawImage(
+                image,
+                // centerX - image.width / 2,
+                // centerY - image.height / 2
+              );
+            };
+
+            // Add the number in the center
+            // ctx.font = '18px Arial';
+            // ctx.fillStyle = '#000';
+            // ctx.textAlign = 'center';
+            // ctx.fillText(number, centerX, centerY);
+          } catch (err) {
+            console.error('QR Code generation failed.', err);
+          }
+        }
+      }
+
+      function saveAsPDF() {
+        const qrcodesContainer = document.getElementById('qrcodes-container');
+
+        // Create a new jsPDF instance
+        const pdf = new jsPDF();
+
+        // Get all the QR code containers
+        const qrcodeContainers = qrcodesContainer.getElementsByClassName('qrcode-container');
+
+        // Iterate over each QR code container
+        for (let i = 0; i < qrcodeContainers.length; i++) {
+          const container = qrcodeContainers[i];
+
+          // Get the QR code canvas element
+          const qrcodeCanvas = container.getElementsByTagName('canvas')[0];
+
+          // Get the image data of the QR code
+          const imageData = qrcodeCanvas.toDataURL('image/jpeg', 1.0);
+
+          // Add the image to the PDF
+          if (i !== 0) {
+            pdf.addPage();
+          }
+          pdf.addImage(imageData, 'JPEG', 10, 10, 190, 190);
+        }
+
+        // Save the PDF
+        pdf.save('qrcodes.pdf');
+      }
+
+      // Call the generateQRCode function when the page loads
+      window.onload = generateQRCode;
+    </script>
+
+  </body>
+</html>

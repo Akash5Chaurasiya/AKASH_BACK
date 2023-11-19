@@ -1,0 +1,18 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bomSchema = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+exports.bomSchema = new mongoose_1.default.Schema({
+    finished: {},
+    process: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "globalProcess"
+    },
+    childProduct: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: "ChildPart"
+        }],
+});

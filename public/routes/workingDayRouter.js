@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.workingDayRouter = void 0;
+const express_1 = require("express");
+const workingDayController_1 = require("../controllers/employee/workingDayController");
+exports.workingDayRouter = (0, express_1.Router)();
+exports.workingDayRouter.route("/").get(workingDayController_1.getMonthData);
+exports.workingDayRouter.route("/add").post(workingDayController_1.addWorkingDay);
+exports.workingDayRouter.route("/update").patch(workingDayController_1.updateWorkingDay);
+exports.workingDayRouter.route("/delete").delete(workingDayController_1.deleteMonth);
