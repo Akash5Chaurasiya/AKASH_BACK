@@ -251,6 +251,11 @@ app.get("/api/v1/notifications/:employeeId", async (req, res) => {
 //   }
 // });
 //testing translation
+app.use("/home", (req, res) => {
+    res.json({
+        msg: "Hi Deployment successfull--agter github pipeline"
+    });
+});
 app.use("/api/v1", translate_1.default);
 // routes
 app.use("/api/v1/auth", authRoutes_1.default);
